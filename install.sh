@@ -1,30 +1,70 @@
 #!/bin/bash
-# Claude Session Protocol -- Installer
-# Copies session management commands to your Claude Code project or user config.
+# Claude Rituals -- Fallback Installer
+# For users who prefer manual installation over the plugin marketplace.
+# Copies all ritual commands to your Claude Code project or user config.
+#
+# Preferred installation: /plugin marketplace add erhankaya34/claude-rituals
+#                         /plugin install claude-rituals@erhankaya34
 
 set -e
 
+VERSION="2.0.0"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 COMMANDS_SRC="$SCRIPT_DIR/commands"
 
 usage() {
-    echo "Usage: ./install.sh [--global | --project <path>]"
+    echo "Claude Rituals v$VERSION -- Fallback Installer"
+    echo ""
+    echo "Usage: ./install.sh [--global | --project <path> | --uninstall]"
     echo ""
     echo "  --global          Install to ~/.claude/commands/ (available in all projects)"
     echo "  --project <path>  Install to <path>/.claude/commands/ (project-specific)"
+    echo "  --uninstall       Remove ritual commands from ~/.claude/commands/"
     echo ""
     echo "If no flag is given, installs to current directory's .claude/commands/"
+    echo ""
+    echo "Preferred: Install as a Claude Code plugin instead:"
+    echo "  /plugin marketplace add erhankaya34/claude-rituals"
+    echo "  /plugin install claude-rituals@erhankaya34"
 }
+
+COMMANDS=(
+    "init.md"
+    "session.md"
+    "checkpoint.md"
+    "endofsession.md"
+    "recap.md"
+    "status.md"
+    "handoff.md"
+)
 
 install_commands() {
     local target="$1"
     mkdir -p "$target"
 
-    cp "$COMMANDS_SRC/session.md" "$target/session.md"
-    cp "$COMMANDS_SRC/checkpoint.md" "$target/checkpoint.md"
-    cp "$COMMANDS_SRC/endofsession.md" "$target/endofsession.md"
+    local count=0
+    for cmd in "${COMMANDS[@]}"; do
+        if [ -f "$COMMANDS_SRC/$cmd" ]; then
+            cp "$COMMANDS_SRC/$cmd" "$target/$cmd"
+            count=$((count + 1))
+        fi
+    done
 
-    echo "Installed 3 commands to $target"
+    echo "Installed $count commands to $target"
+}
+
+uninstall_commands() {
+    local target="$HOME/.claude/commands"
+
+    local count=0
+    for cmd in "${COMMANDS[@]}"; do
+        if [ -f "$target/$cmd" ]; then
+            rm "$target/$cmd"
+            count=$((count + 1))
+        fi
+    done
+
+    echo "Removed $count commands from $target"
 }
 
 install_context_template() {
@@ -46,8 +86,10 @@ case "${1:-}" in
     --global)
         install_commands "$HOME/.claude/commands"
         echo ""
-        echo "Commands installed globally. Use /session, /checkpoint, /endofsession in any project."
-        echo "Note: Run this script with --project in each project to create ACTIVE_CONTEXT.md"
+        echo "Commands installed globally. Available in any project as:"
+        echo "  /init, /session, /checkpoint, /endofsession, /recap, /status, /handoff"
+        echo ""
+        echo "Run with --project in each project to create ACTIVE_CONTEXT.md"
         ;;
     --project)
         if [ -z "${2:-}" ]; then
@@ -59,19 +101,22 @@ case "${1:-}" in
         install_commands "$PROJECT_ROOT/.claude/commands"
         install_context_template "$PROJECT_ROOT"
         echo ""
-        echo "Done. Add the parallel work protocol to your CLAUDE.md:"
-        echo "  cat templates/claude-md-snippet.md"
+        echo "Done. Run /init to generate a CLAUDE.md skeleton for your project."
+        ;;
+    --uninstall)
+        uninstall_commands
         ;;
     --help|-h)
         usage
         ;;
+    --version|-v)
+        echo "Claude Rituals v$VERSION"
+        ;;
     *)
-        # Default: install to current directory
         PROJECT_ROOT="$(pwd)"
         install_commands "$PROJECT_ROOT/.claude/commands"
         install_context_template "$PROJECT_ROOT"
         echo ""
-        echo "Done. Add the parallel work protocol to your CLAUDE.md:"
-        echo "  cat $SCRIPT_DIR/templates/claude-md-snippet.md"
+        echo "Done. Run /init to generate a CLAUDE.md skeleton for your project."
         ;;
 esac

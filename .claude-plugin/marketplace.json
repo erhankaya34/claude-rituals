@@ -1,0 +1,14 @@
+{
+  "name": "claude-rituals-marketplace",
+  "owner": {
+    "name": "Erhan Kaya"
+  },
+  "plugins": [
+    {
+      "name": "claude-rituals",
+      "source": ".",
+      "description": "Session management, project setup, and context continuity for Claude Code",
+      "version": "2.0.0"
+    }
+  ]
+}
