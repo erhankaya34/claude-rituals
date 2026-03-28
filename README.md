@@ -1,166 +1,230 @@
-# Claude Session Protocol
+# Claude Rituals
 
-Session management for Claude Code. Track parallel tabs, checkpoint work-in-progress, and close sessions with structured commits and documentation updates.
+Developer rituals for Claude Code. Session management, project setup, context continuity, and parallel tab coordination -- in one plugin.
 
 ## The Problem
 
-Long-running projects with Claude Code quickly hit these issues:
+Long-running projects with Claude Code hit these walls:
 
-- **Context loss between sessions** -- Claude starts fresh each conversation, previous work context is gone
-- **Parallel tab conflicts** -- Multiple Claude Code tabs editing the same files cause merge chaos
-- **Messy commits** -- Undisciplined wip commits pile up without logical grouping
-- **Documentation drift** -- Project docs fall behind the code
+1. **Context loss** -- Every new conversation starts from scratch. Yesterday's decisions, gotchas, and progress are gone.
+2. **Parallel tab chaos** -- Multiple Claude Code tabs editing the same files cause conflicts, duplicate work, and lost changes.
+3. **Discipline decay** -- Commit hygiene, doc freshness, and structured workflows erode over time without enforcement.
+4. **Onboarding friction** -- Setting up CLAUDE.md, memory, and context files for a new project is manual and undocumented.
 
-## What This Does
+## The Solution: 7 Rituals
 
-Three slash commands that create a disciplined workflow:
-
-| Command | When | What it does |
-|---------|------|-------------|
-| `/session <topic>` | Start of work | Syncs context, detects conflicts, registers tab |
-| `/checkpoint` | During work | Quick wip commit + context update |
-| `/endofsession` | End of work | Groups commits, updates docs, updates memory |
-
-### Parallel Tab Support
-
-The protocol tracks active Claude Code tabs via `.claude/ACTIVE_CONTEXT.md`. When you start a new tab, `/session` warns if another tab is working on overlapping files and suggests git worktrees for isolation.
-
-Close a single tab with `/endofsession --this` (commits only that tab's work) or close everything with `/endofsession`.
+| Ritual | What it does | Mutates? |
+|--------|-------------|----------|
+| `/init` | Detect your stack, generate CLAUDE.md skeleton, set up session tracking | Yes |
+| `/session <topic>` | Start work -- sync context, detect conflicts, register tab | Yes |
+| `/checkpoint` | Mid-work save -- wip commit + context update | Yes |
+| `/endofsession` | Close session -- group commits, update docs, anchor for recap | Yes |
+| `/recap` | "Where was I?" -- recover context from previous sessions | Read-only |
+| `/status` | Project health dashboard -- git, docs, memory at a glance | Read-only |
+| `/handoff` | Generate context transfer document for another developer | Yes |
 
 ## Install
 
-### Option A: Global (all projects)
+### Option A: Claude Code Plugin (recommended)
+
+```
+/plugin marketplace add erhankaya34/claude-rituals
+/plugin install claude-rituals@erhankaya34
+```
+
+Commands are available as `/claude-rituals:init`, `/claude-rituals:session`, etc.
+
+### Option B: Manual (fallback)
 
 ```bash
-git clone https://github.com/erhankaya/claude-session-protocol.git
-cd claude-session-protocol
-./install.sh --global
+git clone https://github.com/erhankaya34/claude-rituals.git
+cd claude-rituals
+./install.sh --global    # All projects
+./install.sh --project /path/to/project  # Single project
 ```
 
-Commands are now available as `/session`, `/checkpoint`, `/endofsession` in every project.
+Commands are available as `/init`, `/session`, etc. (no namespace prefix).
 
-Then, in each project where you want parallel tab tracking:
-
-```bash
-mkdir -p .claude
-cp templates/ACTIVE_CONTEXT.md .claude/ACTIVE_CONTEXT.md
-```
-
-### Option B: Single project
-
-```bash
-git clone https://github.com/erhankaya/claude-session-protocol.git
-cd claude-session-protocol
-./install.sh --project /path/to/your/project
-```
-
-### Option C: Manual
-
-Copy the three files from `commands/` into your project's `.claude/commands/` directory:
-
-```bash
-cp commands/*.md /path/to/your/project/.claude/commands/
-cp templates/ACTIVE_CONTEXT.md /path/to/your/project/.claude/
-```
-
-## Setup
-
-After installing, add the parallel work protocol to your project's `CLAUDE.md`. A ready-to-copy snippet is in `templates/claude-md-snippet.md`.
-
-## Usage
-
-### Starting a session
+## Quick Start
 
 ```
-/session implement auth flow
+1. /claude-rituals:init              # Set up your project (one-time)
+2. /claude-rituals:session auth flow  # Start working on something
+3. ... work ...
+4. /claude-rituals:checkpoint         # Save progress mid-work
+5. ... more work ...
+6. /claude-rituals:endofsession       # Close session, commit, document
+7. ... next day ...
+8. /claude-rituals:recap              # Pick up where you left off
 ```
 
-Output:
+## Rituals in Detail
+
+### /init -- Project Setup
+
+Detects your tech stack from marker files (package.json, Gemfile, pubspec.yaml, go.mod, etc.), analyzes directory structure, and generates:
+
+- **CLAUDE.md** -- Tailored project skeleton with stack-specific conventions
+- **.claude/ACTIVE_CONTEXT.md** -- Session tracking file
+
+If your project already has a CLAUDE.md, the skeleton is saved to `.claude/CLAUDE_SKELETON.md` as a merge reference.
+
+Supported stacks: Flutter, Node.js/TypeScript, Python, Ruby/Rails, Go, Rust, Java/Kotlin, PHP, Elixir, C#/.NET, C/C++.
+
+### /session -- Start Work
+
+Syncs context from other tabs, checks for file conflicts, registers your tab:
+
 ```
-Tab 1 | Branch: main | Topic: implement auth flow
+Tab 1 | Branch: main | Topic: auth flow
 Active tabs: none
 Conflict: none
 ```
 
-### Mid-work checkpoint
+If your last session was over 24 hours ago, it suggests running `/recap` first.
 
-```
-/checkpoint auth middleware done
-```
+### /checkpoint -- Mid-Work Save
 
-Output:
+Quick wip commit with context update. Stages files individually (never `git add .`), excludes sensitive files:
+
 ```
 Checkpoint: 3 files committed. wip: auth middleware done
 ```
 
-### Closing a single tab (parallel work)
+### /endofsession -- Close Session
+
+Groups all changes into logical conventional commits (backend first, then data layer, UI, docs last). Updates project documentation. Writes a session anchor for `/recap`.
+
+Supports `--this` flag for closing a single tab in parallel work -- commits only that tab's files.
+
+### /recap -- Where Was I?
+
+Reads your last session anchor, git log, ACTIVE_CONTEXT, development log, and memory files. Synthesizes into:
 
 ```
-/endofsession --this
+RECAP | Last session: 2026-03-28 18:30 | 8 commits since then
+
+What was done:
+- Added auth middleware and login flow
+- Fixed redirect bug on token expiry
+
+What's pending:
+- OAuth provider integration
+- Password reset flow
+
+Suggested next steps:
+- Continue OAuth integration (most dependencies resolved)
 ```
 
-Commits only files you worked on in this tab. Other tabs' unstaged changes are left untouched.
+Read-only. Changes nothing. Works even without `/init` -- falls back to git log.
 
-### Closing the full session
+### /status -- Project Health
+
+One-screen dashboard showing git state, active work, doc freshness, and memory stats:
 
 ```
-/endofsession
+STATUS | Branch: main | 2 uncommitted | 5 ahead of origin
+
+Recent commits:
+  abc1234 feat: add login screen
+  def5678 fix: token refresh logic
+  ...
+
+Doc freshness:
+  CLAUDE.md          -- 2 days ago
+  README.md          -- 38 days ago (stale)
+
+Memory: 8 files (3 project, 2 feedback, 2 gotcha, 1 user)
 ```
 
-Groups all wip commits into logical conventional commits, updates project docs, updates memory, gives a session summary.
+### /handoff -- Context Transfer
+
+Generates a HANDOFF.md pulling from CLAUDE.md, memory, git history, and development log. Includes a "What I Wish I Knew" section derived from gotcha memories.
+
+Perfect for onboarding a new team member or transferring context to your future self.
+
+## Parallel Tab Workflow
+
+The core value of Claude Rituals is safe parallel development across multiple Claude Code tabs:
+
+1. **Tab 1:** `/session backend refactor` -- registers, no conflicts
+2. **Tab 2:** `/session UI polish` -- registers, detects no overlap
+3. **Tab 1:** `/checkpoint` -- wip commit for backend work
+4. **Tab 2:** `/endofsession --this` -- commits only UI work, leaves backend untouched
+5. **Tab 1:** `/endofsession` -- commits backend work, closes session
+
+If tabs overlap on files, `/session` warns and suggests git worktrees for isolation.
 
 ## How It Works
 
 ### ACTIVE_CONTEXT.md
 
-A shared file at `.claude/ACTIVE_CONTEXT.md` that tracks:
+A shared file at `.claude/ACTIVE_CONTEXT.md` tracking:
 - Which tabs are active and what they're working on
 - Recently completed work
-- Ongoing tasks
-- Warnings (pending deploys, risky state, etc.)
+- Ongoing tasks and warnings
 
-This file is the "shared brain" between parallel tabs. Each `/session` reads it, each `/checkpoint` updates it, each `/endofsession` cleans it up.
+Every `/session` reads it, every `/checkpoint` updates it, every `/endofsession` cleans it up.
+
+### Session Anchor
+
+`/endofsession` writes a timestamp to `.claude/last_session`. Next time you run `/recap`, it knows exactly where you left off. Without it, `/recap` falls back to the last 48 hours of git history.
 
 ### Commit Discipline
 
 `/endofsession` enforces:
-- Logical grouping (backend, data layer, UI, docs -- separate commits)
-- Conventional commit format (`feat:`, `fix:`, `refactor:`, etc.)
-- No sensitive files committed (.env, credentials)
+- Logical grouping (backend, data, UI, docs -- separate commits)
+- Conventional commit format (`feat:`, `fix:`, `refactor:`)
+- No sensitive files (.env, credentials)
 - File-by-file staging (never `git add .`)
 
-### Documentation Updates
+## Customization
 
-`/endofsession` automatically detects project docs (CLAUDE.md, DEVELOPMENT_LOG.md, architecture docs, etc.) and updates relevant sections. It documents gotchas, abandoned approaches, and architectural decisions so future sessions start with full context.
+All rituals are markdown files. Edit them to match your project:
+
+- **Commit style** -- Change conventional commits to your team's format
+- **Doc detection** -- Add your project's specific documentation files
+- **Grouping rules** -- Adjust commit categories for your stack
+- **Stack templates** -- Add or modify templates in `templates/stacks/`
+
+## Upgrading from v1
+
+If you previously used `claude-session-protocol`:
+
+1. Remove old commands: `./install.sh --uninstall` (or manually delete session.md, checkpoint.md, endofsession.md from `~/.claude/commands/`)
+2. Install the plugin: `/plugin marketplace add erhankaya34/claude-rituals`
+3. Run `/claude-rituals:init` on your existing projects
+
+Your ACTIVE_CONTEXT.md files are compatible -- no migration needed.
 
 ## File Structure
 
 ```
-claude-session-protocol/
+claude-rituals/
+  .claude-plugin/
+    plugin.json              Plugin manifest
+    marketplace.json         Marketplace definition
   commands/
-    session.md          -- /session slash command
-    checkpoint.md       -- /checkpoint slash command
-    endofsession.md     -- /endofsession slash command
+    init.md                  /claude-rituals:init
+    session.md               /claude-rituals:session
+    checkpoint.md            /claude-rituals:checkpoint
+    endofsession.md          /claude-rituals:endofsession
+    recap.md                 /claude-rituals:recap
+    status.md                /claude-rituals:status
+    handoff.md               /claude-rituals:handoff
   templates/
-    ACTIVE_CONTEXT.md   -- Starter template for tab tracking
-    claude-md-snippet.md -- Copy-paste block for your CLAUDE.md
-  install.sh            -- Installer script
-  LICENSE               -- MIT
-  README.md
+    ACTIVE_CONTEXT.md        Session tracking template
+    CLAUDE_SKELETON.md       Generic CLAUDE.md skeleton
+    stacks/                  Stack-specific convention hints
+      flutter.md, node.md, python.md, ruby.md,
+      go.md, rust.md, java.md
+  install.sh                 Fallback installer
+  LICENSE                    MIT
 ```
-
-## Customization
-
-The commands are plain markdown files -- edit them to match your project's conventions:
-
-- **Commit message style**: Change conventional commits to your team's format
-- **Doc files**: Add your project's specific documentation files to the endofsession detection list
-- **Grouping rules**: Adjust commit grouping categories for your stack
-- **Language**: Commands are in English but can be translated
 
 ## Requirements
 
-- Claude Code (CLI, desktop app, or IDE extension)
+- Claude Code (CLI, desktop app, web app, or IDE extension)
 - Git
 
 ## License

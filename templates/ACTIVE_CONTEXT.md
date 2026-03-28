@@ -1,7 +1,8 @@
 # Active Context
 
 > Shared state across parallel Claude Code tabs.
-> Updated by `/session`, `/checkpoint`, `/endofsession`.
+> Updated by: /session (register), /checkpoint (activity), /endofsession (cleanup)
+> Read by: /recap (context recovery), /status (dashboard), /handoff (transfer)
 
 ## Active Work
 
