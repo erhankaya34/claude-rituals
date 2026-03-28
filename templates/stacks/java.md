@@ -1,0 +1,11 @@
+### Java / Kotlin Conventions
+- Build tool: document Maven or Gradle usage and key plugins
+- Framework: follow Spring Boot / Android conventions (document which)
+- Dependency injection: constructor injection preferred
+- Package structure: domain-driven or layer-driven (document choice)
+- Tests: JUnit 5 preferred, Mockito for mocking, tests mirror source structure
+- Formatting: Google Java Format or project-specific formatter
+- Kotlin: prefer data classes, null safety, coroutines over callbacks
+- Logging: SLF4J with Logback (document log levels)
+- Environment: document Java/Kotlin version, Gradle/Maven version
+- Build with: `./gradlew build` or `mvn package`, test with: `./gradlew test` or `mvn test`

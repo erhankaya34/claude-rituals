@@ -1,0 +1,11 @@
+### Python Conventions
+- Virtual environment: document tool (venv, poetry, pipenv, conda)
+- Type hints: use them, especially for function signatures and return types
+- Framework conventions: follow the framework's project structure (Django `apps/`, FastAPI `routers/`, etc.)
+- Formatting: Black (or Ruff) for auto-formatting, isort for imports
+- Linting: Ruff or flake8
+- Tests: pytest preferred, tests in `tests/` directory
+- Docstrings: Google style or NumPy style (pick one, be consistent)
+- Dependencies: `requirements.txt` or `pyproject.toml` (document which)
+- No star imports, no mutable default arguments
+- Run with: `python -m <module>` or framework command, test with: `pytest`

@@ -1,0 +1,11 @@
+### Rust Conventions
+- Ownership: prefer borrowing over cloning, document lifetime patterns
+- Error handling: `Result<T, E>` for recoverable errors, custom error types with `thiserror`
+- Module structure: `mod.rs` or filename modules, `pub` only what's needed
+- Unsafe: minimize unsafe blocks, document safety invariants when used
+- Testing: unit tests in `#[cfg(test)]` modules, integration tests in `tests/`
+- Formatting: `rustfmt` (non-negotiable)
+- Linting: `clippy` with project config
+- Feature flags: document conditional compilation features
+- Dependencies: Cargo, prefer well-maintained crates, pin versions
+- Build with: `cargo build`, test with: `cargo test`

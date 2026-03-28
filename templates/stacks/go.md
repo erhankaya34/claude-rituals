@@ -1,0 +1,11 @@
+### Go Conventions
+- Package structure: `cmd/` for entry points, `internal/` for private packages, `pkg/` for public packages
+- Error handling: explicit error returns, no panic in library code, wrap errors with context
+- Interfaces: accept interfaces, return structs
+- Concurrency: document goroutine patterns, channel usage, context propagation
+- Testing: `_test.go` files alongside source, table-driven tests preferred
+- Formatting: `gofmt` / `goimports` (non-negotiable)
+- Linting: `golangci-lint` with project config
+- Dependencies: Go modules (`go.mod`), minimal external dependencies
+- No init() functions unless absolutely necessary
+- Build with: `go build ./...`, test with: `go test ./...`

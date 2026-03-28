@@ -1,0 +1,11 @@
+### Ruby / Rails Conventions
+- Follow Rails conventions: convention over configuration
+- Models: ActiveRecord, validations, scopes, callbacks (document custom patterns)
+- Controllers: thin controllers, business logic in models or service objects
+- Views: ERB/Haml/Slim (document preference), partials for reuse
+- Background jobs: document job processor (Sidekiq, GoodJob, Solid Queue)
+- Tests: Minitest or RSpec (document preference), fixtures or factories
+- Database: migrations for schema changes, `db/seeds.rb` for seed data
+- Rubocop for linting (document config)
+- Gems: Bundler, `bundle exec` for all commands
+- Run with: `bin/rails server`, test with: `bin/rails test` or `bundle exec rspec`

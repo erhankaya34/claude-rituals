@@ -1,0 +1,11 @@
+### Node.js / TypeScript Conventions
+- Module system: document ESM vs CJS preference
+- Framework conventions: follow the framework's directory structure (Next.js `app/`, Express `routes/`, etc.)
+- TypeScript: strict mode recommended, avoid `any`
+- Package manager: document preference (npm, yarn, pnpm)
+- Environment variables: `.env` files, never committed, document required vars in `.env.example`
+- Error handling: async/await with try/catch, no unhandled promise rejections
+- Tests: document test runner (Jest, Vitest, Mocha) and patterns
+- Linting: ESLint + Prettier (document config)
+- Build: document build command and output directory
+- Run with: `npm run dev`, test with: `npm test`

@@ -1,0 +1,11 @@
+### Flutter / Dart Conventions
+- Widget composition over deep nesting -- extract small, reusable widgets
+- State management: document your choice (Riverpod, Bloc, Provider, InheritedWidget, etc.)
+- `const` constructors wherever possible for performance
+- Separate business logic from UI -- use repositories, services, models
+- Platform channels: document any native iOS/Android bridges
+- Assets: all images/fonts in `assets/`, referenced in `pubspec.yaml`
+- Tests: widget tests in `test/`, integration tests in `integration_test/`
+- Formatting: `dart format`, line length 80 (default)
+- No hardcoded colors/fonts -- use theme tokens
+- Run with: `flutter run`, test with: `flutter test`
