@@ -6,6 +6,12 @@ Mid-work save point. Creates a wip commit and updates ACTIVE_CONTEXT. Does NOT u
 
 ---
 
+## 0. Pre-flight
+
+1. Check if `.claude/ACTIVE_CONTEXT.md` exists
+2. If missing: warn "No ACTIVE_CONTEXT.md found -- session tracking unavailable. The wip commit will still be created."
+3. Proceed regardless -- the primary value is the commit, not the context update.
+
 ## 1. Commit
 
 1. List changes with `git status`

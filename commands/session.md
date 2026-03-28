@@ -1,10 +1,17 @@
-# Session Start
+# Session
 
-Run at the beginning of a new work session. Syncs state from other tabs, registers this tab, checks for conflicts.
+Start a new work session. Syncs state from other tabs, registers this tab, checks for conflicts.
 
 **Topic:** `$ARGUMENTS`
 
 ---
+
+## 0. Pre-flight
+
+1. Check if `.claude/ACTIVE_CONTEXT.md` exists
+2. If missing: suggest "Run `/claude-rituals:init` to set up session tracking for this project." Then proceed -- session can still register the tab by creating the file.
+3. Check `.claude/last_session` for the last session timestamp
+4. If last session was more than 24 hours ago: suggest "It's been a while since your last session. Consider running `/claude-rituals:recap` to review what happened."
 
 ## 1. Sync
 

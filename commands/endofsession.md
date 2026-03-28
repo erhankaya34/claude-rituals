@@ -116,6 +116,13 @@ Always document these in detail:
 
 > **`--this` mode:** Unstaged files from other tabs are expected. Report as "X files belong to other tabs, left untouched."
 
+## 5. Session Anchor
+
+Write the current ISO timestamp to `.claude/last_session`. This file is used by `/recap` to determine where the last session ended.
+
+- Normal mode: always write the timestamp
+- `--this` mode: only write the timestamp if no other active tabs remain in ACTIVE_CONTEXT.md (to avoid anchoring too early when other tabs are still working)
+
 ---
 
 ## Notes
@@ -124,3 +131,4 @@ Always document these in detail:
 - Commit all docs updates as a separate commit (`docs: update project docs with session N notes`)
 - If wip commits exist, they should be organized before session close (see Section 1)
 - Give user a brief "session summary" when done
+- The `.claude/last_session` file is NOT committed -- it's local state for `/recap`
